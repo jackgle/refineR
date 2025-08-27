@@ -261,53 +261,40 @@ findRI <- function(Data = NULL, model = c("BoxCox", "modBoxCoxFast", "modBoxCox"
 					   				   
                     # initial estimation of lambda...
                     if (!is.null(args$fix_lambda) && isTRUE(args$fix_lambda)) {
-                        lambdaVec <- c(1)
-                    
-                        startVals <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec,
-                                                         roundingBase = roundingBase, abEst = NULL)
-                        Hist <- generateHistData(x = DataShifted, ab = startVals$abEst$abHist,
-                                                 roundingBase = roundingBase)
-                    
-                        if(iterMBC == 1) 
-                            abOr <- Hist$abOr
-                    
-                        bestParam <- c(NA, NA, NA, NA, 1e9, NA)
-                        bestParam <- testParam(lambdaVec = lambdaVec, bestParam = bestParam,
-                                               Data = DataShifted, HistData = Hist,
-                                               startValues = startVals, NIter = 7,
-                                               alpha = 0.01, alphaMcb = 0.1)
+                        lambdaVec <- 1
                     } else {
+                        lambdaVec <- (1/12*(0:12))^1.8170595
+                    }
 									
-    					#define search regions for mu, sigma, and get estimation of ab for all lambdas determining the area around the main peak
-    					startVals <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec, roundingBase = roundingBase, abEst = NULL)
-    						
-    					#generate list with histogram data
-    					Hist      <- generateHistData(x = DataShifted, ab = startVals$abEst$abHist, roundingBase = roundingBase)
-    						
-    					if(iterMBC == 1)					
-    						abOr <- Hist$abOr				
-    																
-    					bestParam <- c(NA, NA, NA, NA, 1e9, NA)
-    								   
-    					bestParam <- testParam(lambdaVec = lambdaVec, bestParam = bestParam, Data = DataShifted, HistData = Hist, 
-    										   startValues = startVals, NIter = 7, alpha = 0.01, alphaMcb = 0.1)
-    										
-    					# estimation with updated lambdaVec..	
-    					# refine search region of lambda...		
-    					minIndex  <- min(length(lambdaVec)-2, max(3, which.min(abs(bestParam[1]-lambdaVec))))
-    						
-    					lambdaVec <- c(seq(from = lambdaVec[minIndex-2], to = lambdaVec[minIndex-1], length.out = 5)[2:4],
-    					   			   seq(from = lambdaVec[minIndex-1], to = lambdaVec[minIndex+0], length.out = 5)[2:4],
-    								   seq(from = lambdaVec[minIndex+0], to = lambdaVec[minIndex+1], length.out = 5)[2:4],
-    								   seq(from = lambdaVec[minIndex+1], to = lambdaVec[minIndex+2], length.out = 5)[2:4])			
-    						
-    					startValsRefined <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec, roundingBase = roundingBase, abEst = startVals$abEst)
-    								   
-    					bestParam <- testParam(lambdaVec = lambdaVec, bestParam = bestParam, Data = DataShifted, HistData = Hist, 
-    										   startValues = startValsRefined, NIter = 7, alpha = 0.01, alphaMcb = 0.1)
+					#define search regions for mu, sigma, and get estimation of ab for all lambdas determining the area around the main peak
+					startVals <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec, roundingBase = roundingBase, abEst = NULL)
+						
+					#generate list with histogram data
+					Hist      <- generateHistData(x = DataShifted, ab = startVals$abEst$abHist, roundingBase = roundingBase)
+						
+					if(iterMBC == 1)					
+						abOr <- Hist$abOr				
+																
+					bestParam <- c(NA, NA, NA, NA, 1e9, NA)
+								   
+					bestParam <- testParam(lambdaVec = lambdaVec, bestParam = bestParam, Data = DataShifted, HistData = Hist, 
+										   startValues = startVals, NIter = 7, alpha = 0.01, alphaMcb = 0.1)
+										
+					# estimation with updated lambdaVec..	
+					# refine search region of lambda...		
+					minIndex  <- min(length(lambdaVec)-2, max(3, which.min(abs(bestParam[1]-lambdaVec))))
+						
+					lambdaVec <- c(seq(from = lambdaVec[minIndex-2], to = lambdaVec[minIndex-1], length.out = 5)[2:4],
+					   			   seq(from = lambdaVec[minIndex-1], to = lambdaVec[minIndex+0], length.out = 5)[2:4],
+								   seq(from = lambdaVec[minIndex+0], to = lambdaVec[minIndex+1], length.out = 5)[2:4],
+								   seq(from = lambdaVec[minIndex+1], to = lambdaVec[minIndex+2], length.out = 5)[2:4])			
+						
+					startValsRefined <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec, roundingBase = roundingBase, abEst = startVals$abEst)
+								   
+					bestParam <- testParam(lambdaVec = lambdaVec, bestParam = bestParam, Data = DataShifted, HistData = Hist, 
+										   startValues = startValsRefined, NIter = 7, alpha = 0.01, alphaMcb = 0.1)
 					 
-					}
-                    
+					
 					# check if costs have improved								
 					if(bestParam[5] < bestParamShifted[5])
 					{					
