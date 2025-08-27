@@ -277,6 +277,9 @@ findRI <- function(Data = NULL, model = c("BoxCox", "modBoxCoxFast", "modBoxCox"
                                                startValues = startVals, NIter = 7,
                                                alpha = 0.01, alphaMcb = 0.1)
                     } else {
+
+    					# initial estimation of lambda...
+    					lambdaVec <- (1/12*(0:12))^1.8170595
 									
     					#define search regions for mu, sigma, and get estimation of ab for all lambdas determining the area around the main peak
     					startVals <- defineSearchRegions(x = DataShifted, lambdaVec = lambdaVec, roundingBase = roundingBase, abEst = NULL)
